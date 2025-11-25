@@ -62,6 +62,8 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                # inject logged-in user's points into all templates
+                'home.context_processors.user_points',
             ],
         },
     },

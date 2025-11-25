@@ -1,0 +1,28 @@
+{% load static %}
+<style>
+    .topbar {
+        position: absolute;
+        top: 14px;
+        right: 14px;
+        background: rgba(255,255,255,0.95);
+        border-radius: 10px;
+        padding: 8px 12px;
+        box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+        font-weight: 600;
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        z-index: 9999;
+    }
+    .topbar a { color: #333; text-decoration: none; }
+    .topbar .username { color: #2c7a7b; }
+    .topbar .points { background: #f1f5f9; padding: 4px 8px; border-radius: 8px; font-weight:700; }
+</style>
+
+{% if request.user.is_authenticated %}
+<div class="topbar">
+    <div class="username">👤 {{ request.user.username }}</div>
+    <div class="points">⭐ {{ user_points|default:0 }} pts</div>
+    <div><a href="{% url 'index' %}">🏠</a></div>
+</div>
+{% endif %}

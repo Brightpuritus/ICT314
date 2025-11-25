@@ -210,6 +210,11 @@
             <h1>💳 เติมเงิน</h1>
             <p style="font-size: 1.2rem; color: #666; margin: 0;">{{ game_name }}</p>
         </div>
+        {% if request.user.is_authenticated %}
+            <div style="text-align:center; margin-bottom:12px; font-weight:700; color:#333;">
+                ⭐ พ้อยต์ของคุณ: {{ user_points|default:0 }} pts
+            </div>
+        {% endif %}
         
         {% if errors %}
             <div class="alert alert-danger">
@@ -227,6 +232,12 @@
             <div class="mb-4">
                 <label class="form-label">👤 ชื่อผู้เล่น / ยูสเซอร์:</label>
                 <input type="text" class="form-control" name="user" value="{{ form.user }}" placeholder="กรอกชื่อผู้เล่น" required>
+            </div>
+            
+            <div class="mb-3">
+                <label class="form-label">🎫 ใช้พ้อยต์เป็นส่วนลด (ถ้ามี):</label>
+                <input type="number" min="0" class="form-control" name="use_points" value="0" placeholder="กรอกจำนวนพ้อยต์ที่ต้องการใช้ (เช่น 50)">
+                <small class="text-muted">พ้อยต์จะถูกตรวจสอบและตัดเมื่อยืนยันการชำระเงิน</small>
             </div>
             
             <div class="mb-4">

@@ -12,6 +12,7 @@
 <body>
     <div class="container mt-5">
         <div class="alert alert-danger" role="alert">
+    {% include 'topbar.html' %}
             <h2>ข้อผิดพลาด</h2>
             <p>{{ message }}</p>
             <a href="{% url 'topup_games' %}" class="btn btn-primary">กลับ</a>

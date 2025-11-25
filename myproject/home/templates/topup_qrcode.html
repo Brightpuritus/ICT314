@@ -202,6 +202,18 @@
                 <span class="info-label">💰 จำนวน:</span>
                 <span class="info-value">฿{{ amount }}</span>
             </div>
+            {% if available_points is not None %}
+            <div class="info-item">
+                <span class="info-label">⭐ พ้อยต์คงเหลือ:</span>
+                <span class="info-value">{{ available_points }} pts</span>
+            </div>
+            {% endif %}
+            {% if used_points %}
+            <div class="info-item">
+                <span class="info-label">🔖 ใช้พ้อยต์:</span>
+                <span class="info-value">{{ used_points }} pts</span>
+            </div>
+            {% endif %}
         </div>
         
         <div class="qr-display-box">
@@ -218,7 +230,7 @@
         </div>
         
         <div class="btn-group">
-            <a href="{% url 'topup_confirm' game_id %}?user={{ user|urlencode }}&game_name={{ game_name|urlencode }}&amount={{ amount }}&tx_id={{ tx_id }}" class="btn-confirm">✓ ยืนยันชำระเงินเรียบร้อย</a>
+            <a href="{% url 'topup_confirm' game_id %}?user={{ user|urlencode }}&game_name={{ game_name|urlencode }}&amount={{ amount }}&tx_id={{ tx_id }}&used_points={{ used_points }}" class="btn-confirm">✓ ยืนยันชำระเงินเรียบร้อย</a>
             <a href="{% url 'topup_games' %}" class="btn-back">← ย้อนกลับ</a>
         </div>
         

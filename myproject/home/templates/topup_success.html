@@ -209,6 +209,11 @@
             <a href="{% url 'topup_games' %}" class="btn-again">💳 เติมอีกครั้ง</a>
             <a href="{% url 'index' %}" class="btn-home">🏠 กลับหน้าแรก</a>
         </div>
+        {% if player_points is not None %}
+        <div style="margin-top:16px; text-align:center; color:#333; font-weight:600;">
+            🎉 ยอดพ้อยต์ในบัญชีของคุณตอนนี้: {{ player_points }} pts
+        </div>
+        {% endif %}
     </div>
 
     <!-- Bootstrap JS -->
