@@ -91,6 +91,11 @@
             50% { transform: translateY(-8px); }
         }
         
+        .game-card.pubg { background: linear-gradient(135deg, #FF6B6B 0%, #c92a2a 100%); border: 3px solid #FF6B6B; }
+        .game-card.rov { background: linear-gradient(135deg, #4ECDC4 0%, #1a7f78 100%); border: 3px solid #4ECDC4; }
+        .game-card.freefire { background: linear-gradient(135deg, #FFE66D 0%, #ffb700 100%); border: 3px solid #FFE66D; }
+        .game-card.genshin { background: linear-gradient(135deg, #95E1D3 0%, #2aa79b 100%); border: 3px solid #95E1D3; }
+        
         .games-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -133,7 +138,7 @@
     
     <div class="games-grid">
         {% for game in games %}
-            <a href="{% url 'topup_form' game.id %}" class="game-card" style="background: linear-gradient(135deg, {{ game.color }} 0%, #333 100%);">
+            <a href="{% url 'topup_form' game.id %}" class="game-card {{ game.id }}">
                 <div class="game-icon">{{ game.icon }}</div>
                 <div class="game-name">{{ game.name }}</div>
             </a>
