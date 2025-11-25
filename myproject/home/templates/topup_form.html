@@ -68,13 +68,31 @@
             transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             background-color: #f8f9fa;
             position: relative;
+            overflow: hidden;
+        }
+        
+        .package-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.3) 1px, transparent 1px);
+            background-size: 20px 20px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
         }
         
         .package-card:hover {
             border-color: #667eea;
-            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.2);
-            transform: translateY(-4px);
-            background-color: #f0f2ff;
+            box-shadow: 0 12px 35px rgba(102, 126, 234, 0.35);
+            transform: translateY(-6px) scale(1.02);
+            background: linear-gradient(135deg, #f0f2ff 0%, #f5f7ff 100%);
+        }
+        
+        .package-card:hover::before {
+            opacity: 1;
         }
         
         .package-card input[type="radio"] {
@@ -82,22 +100,51 @@
             top: 12px;
             right: 12px;
             cursor: pointer;
-            width: 22px;
-            height: 22px;
+            width: 24px;
+            height: 24px;
             accent-color: #667eea;
         }
         
         .package-card.selected {
             border-color: #667eea;
-            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
-            box-shadow: 0 12px 35px rgba(102, 126, 234, 0.3);
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.15) 0%, rgba(118, 75, 162, 0.1) 100%);
+            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.4);
+            transform: scale(1.05);
+        }
+        
+        .package-card.selected::after {
+            content: '✓';
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            width: 28px;
+            height: 28px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 18px;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+        
+        .package-icon {
+            font-size: 32px;
+            margin-bottom: 8px;
+            display: inline-block;
         }
         
         .package-price {
-            font-size: 36px;
-            font-weight: 700;
-            color: #667eea;
-            margin: 8px 0;
+            font-size: 38px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin: 10px 0;
+            text-shadow: none;
         }
         
         .package-label {
@@ -108,8 +155,8 @@
         
         .packages-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
-            gap: 15px;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 18px;
             margin-bottom: 30px;
         }
         
@@ -188,8 +235,8 @@
                     {% for amount in amounts %}
                         <label class="package-card" data-package="{{ amount }}">
                             <input type="radio" name="amount" value="{{ amount }}" {% if form.amount == amount|stringformat:"d" %}checked{% endif %} required>
+
                             <div class="package-price">฿{{ amount }}</div>
-                            <div class="package-label">{{ amount }} บาท</div>
                         </label>
                     {% endfor %}
                 </div>
