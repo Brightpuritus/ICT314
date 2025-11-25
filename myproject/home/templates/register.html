@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>เข้าสู่ระบบ - Game Top-Up</title>
+    <title>สมัครสมาชิก - Game Top-Up</title>
     <style>
         * {
             margin: 0;
@@ -146,14 +146,15 @@
             box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
         }
 
-        .btn-primary {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            box-shadow: 0 4px 15px rgba(245, 87, 108, 0.4);
+        .btn-secondary {
+            background: #6c757d;
+            box-shadow: 0 4px 15px rgba(108, 117, 125, 0.3);
         }
 
-        .btn-primary:hover {
+        .btn-secondary:hover {
+            background: #5a6268;
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(245, 87, 108, 0.6);
+            box-shadow: 0 6px 20px rgba(108, 117, 125, 0.4);
         }
 
         @media (max-width: 600px) {
@@ -180,11 +181,11 @@
 
         <main class="content">
             <section class="welcome-text">
-                <h2>ยินดีต้อนรับ</h2>
-                <p>กรุณาเข้าสู่ระบบหรือสมัครสมาชิกเพื่อเติมเงินเกม</p>
+                <h2>สมัครสมาชิก</h2>
+                <p>กรุณากรอกข้อมูลเพื่อสมัครสมาชิก</p>
             </section>
             
-            <form id="loginForm" class="form">
+            <form id="registerForm" class="form">
                 <div class="form-group">
                     <label for="username">ชื่อผู้ใช้</label>
                     <input type="text" id="username" placeholder="กรอกชื่อผู้ใช้" required>
@@ -194,8 +195,8 @@
                     <input type="password" id="password" placeholder="กรอกรหัสผ่าน" required>
                 </div>
                 <div class="form-actions">
-                    <a href="{% url 'topup_games' %}" class="btn btn-success">เข้าสู่ระบบ</a>
-                    <a href="{% url 'register' %}" class="btn btn-primary">สมัครสมาชิก</a>
+                    <button type="submit" class="btn btn-success">สมัครสมาชิก</button>
+                    <a href="{% url 'index' %}" class="btn btn-secondary">กลับไปหน้าหลัก</a>
                 </div>
             </form>
         </main>

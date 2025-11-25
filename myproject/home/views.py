@@ -4,6 +4,9 @@ import uuid
 def index(request):
     return render(request, 'index.html')
 
+def register(request):
+    return render(request, 'register.html')    
+
 def topup_games(request):
     """หน้าแรกของเติมเกม - เลือกเกม"""
     games = [
