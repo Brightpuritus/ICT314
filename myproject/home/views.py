@@ -1,9 +1,10 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.http import JsonResponse
-from .models import Player
+from django.contrib import messages
+from .models import Player, Game
 import uuid
 from io import BytesIO
 import base64
@@ -70,60 +71,33 @@ def logout_view(request):
 
 @login_required(login_url='index')
 def topup_games(request):
-    """หน้าแรกของเติมเกม - เลือกเกม"""
-    games = [
-        {'id': 'pubg', 'name': 'PUBG Mobile', 'icon': '🎮', 'color': '#FF6B6B'},
-        {'id': 'rov', 'name': 'RoV (Realm of Valor)', 'icon': '⚔️', 'color': '#4ECDC4'},
-        {'id': 'freefire', 'name': 'Free Fire', 'icon': '🔥', 'color': '#FFE66D'},
-        {'id': 'genshin', 'name': 'Genshin Impact', 'icon': '✨', 'color': '#95E1D3'},
-    ]
-    
-    # Get user's player profile and points
-    user = request.user
-    player = None
-    user_points = 0
+    games = Game.objects.all()  # ดึงข้อมูลเกมทั้งหมดจากฐานข้อมูล
+    username = request.user.username  # ดึงชื่อผู้ใช้ที่ล็อกอิน
+
+    # ดึงพ้อยต์ของผู้ใช้จาก Player
     try:
-        player = getattr(user, 'player_profile', None)
-        if player:
-            user_points = player.points
-        else:
-            # Try to find by username and link
-            player = Player.objects.filter(name=user.username).first()
-            if player:
-                player.user = user
-                player.save()
-                user_points = player.points
-            else:
-                # Create a fresh Player for this user
-                player = Player.objects.create(user=user, name=user.username)
-                user_points = 0
-    except Exception:
-        pass
-    
+        player = Player.objects.get(user=request.user)
+        user_points = player.points
+    except Player.DoesNotExist:
+        user_points = 0  # หากไม่มี Player ให้ตั้งค่าเริ่มต้นเป็น 0
+
     return render(request, 'topup_games.html', {
         'games': games,
-        'username': user.username,
-        'user_points': user_points
+        'username': username,
+        'user_points': user_points,
     })
 
 @login_required(login_url='index')
 def topup_form(request, game_id):
-    """หน้าฟอร์มเติมเงิน"""
-    games_dict = {
-        'pubg': 'PUBG Mobile',
-        'rov': 'RoV (Realm of Valor)',
-        'freefire': 'Free Fire',
-        'genshin': 'Genshin Impact',
-    }
-    
-    game_name = games_dict.get(game_id)
-    if not game_name:
+    try:
+        game = Game.objects.get(id=game_id)  # ดึงข้อมูลเกมจากฐานข้อมูล
+    except Game.DoesNotExist:
         return render(request, 'error.html', {'message': 'ไม่พบเกม'})
-    
-    amounts = [10, 50, 100, 500, 1000]
+
+    amounts = [10, 50, 100, 500, 1000]  # ตัวเลือกแพ็กเกจการเติมเงิน
     return render(request, 'topup_form.html', {
-        'game_id': game_id,
-        'game_name': game_name,
+        'game_id': game.id,
+        'game_name': game.name,
         'amounts': amounts
     })
 
@@ -337,3 +311,47 @@ def get_user_points(request):
             'success': False,
             'error': str(e)
         }, status=400)
+
+@login_required(login_url='index')
+def add_game(request):
+    if request.method == 'POST':
+        name = request.POST.get('name', '').strip()
+        icon = request.POST.get('icon', '').strip()
+        url = request.POST.get('url', '').strip()
+
+        # ตรวจสอบว่ากรอกข้อมูลครบถ้วนหรือไม่
+        if not name or not url:
+            messages.error(request, 'กรุณากรอกข้อมูลให้ครบถ้วน')
+            return render(request, 'add_game.html')
+
+        # บันทึกเกมใหม่ลงในฐานข้อมูล
+        Game.objects.create(name=name, icon=icon or '🎮', url=url)
+        messages.success(request, f'เพิ่มเกม "{name}" สำเร็จ!')
+        return redirect('topup_games')
+
+    return render(request, 'add_game.html')
+
+@login_required(login_url='index')
+def edit_game(request, game_id):
+    game = get_object_or_404(Game, id=game_id)
+
+    if request.method == 'POST':
+        game.name = request.POST.get('name', game.name)
+        game.icon = request.POST.get('icon', game.icon)
+        game.url = request.POST.get('url', game.url)
+        game.save()
+        messages.success(request, f'แก้ไขเกม "{game.name}" สำเร็จ!')
+        return redirect('topup_games')
+
+    return render(request, 'edit_game.html', {'game': game})
+
+@login_required(login_url='index')
+def delete_game(request, game_id):
+    game = get_object_or_404(Game, id=game_id)
+    if request.method == 'POST':
+        game_name = game.name
+        game.delete()
+        messages.success(request, f'ลบเกม "{game_name}" สำเร็จ!')
+        return redirect('topup_games')
+
+    return render(request, 'confirm_delete.html', {'game': game})

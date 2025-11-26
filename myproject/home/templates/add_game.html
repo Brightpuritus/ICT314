@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div class="container">
+        <h1>เพิ่มเกมใหม่</h1>
+        <form method="POST">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="name">ชื่อเกม</label>
+                <input type="text" id="name" name="name" class="form-control" placeholder="ชื่อเกม" required>
+            </div>
+            <div class="form-group">
+                <label for="icon">ไอคอน (อีโมจิ)</label>
+                <input type="text" id="icon" name="icon" class="form-control" placeholder="🎮">
+            </div>
+            <div class="form-group">
+                <label for="url">URL รูปภาพ</label>
+                <input type="url" id="url" name="url" class="form-control" placeholder="https://example.com/image.png" required>
+            </div>
+            <button type="submit" class="btn btn-success mt-3">เพิ่มเกม</button>
+            <a href="{% url 'topup_games' %}" class="btn btn-secondary mt-3">ยกเลิก</a>
+        </form>
+    </div>
+    <div class="games-grid">
+        {% for game in games %}
+            <a href="{% url 'topup_form' game.id %}" class="game-card">
+                <div class="game-icon">
+                    {% if game.url %}
+                        <img src="{{ game.url }}" alt="{{ game.name }}" class="game-image">
+                    {% else %}
+                        <span>{{ game.icon }}</span>
+                    {% endif %}
+                </div>
+                <div class="game-name">{{ game.name }}</div>
+            </a>
+        {% endfor %}
+    </div>
+</body>
+</html>

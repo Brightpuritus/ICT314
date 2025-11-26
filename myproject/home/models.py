@@ -34,3 +34,12 @@ class Player(models.Model):
 		self.points -= deducted
 		self.save()
 		return deducted
+
+
+class Game(models.Model):
+    name = models.CharField(max_length=100)  # ชื่อเกม
+    url = models.URLField()  # URL รูปภาพเกม
+    icon = models.CharField(max_length=50, blank=True, null=True)  # ไอคอน (อีโมจิ)
+
+    def __str__(self):
+        return self.name

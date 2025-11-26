@@ -229,6 +229,60 @@
                 font-size: 2rem;
             }
         }
+
+        .game-image {
+            width: 100%;
+            height: auto;
+            max-width: 100px; /* กำหนดขนาดสูงสุดของรูปภาพ */
+            border-radius: 10px; /* ทำให้มุมของรูปภาพโค้งมน */
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* เพิ่มเงาให้รูปภาพ */
+        }
+
+        .add-game-btn {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .add-game-btn .btn {
+            background: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .add-game-btn .btn:hover {
+            background: #45a049;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .game-actions {
+            position: relative;
+            z-index: 10; /* ทำให้ปุ่มอยู่ด้านบนสุด */
+            pointer-events: auto; /* ตรวจสอบให้แน่ใจว่าสามารถคลิกได้ */
+        }  
+
+        .game-link {
+            text-decoration: none;
+            color: inherit;
+            display: block;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .game-link:hover {
+            transform: scale(1.05);
+        }
+
+        .game-actions {
+            margin-top: 10px;
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
     </style>
 </head>
 <body>
@@ -258,12 +312,31 @@
         
         <div class="games-grid">
             {% for game in games %}
-                <a href="{% url 'topup_form' game.id %}" class="game-card {{ game.id }}">
-                    <div class="game-icon">{{ game.icon }}</div>
-                    <div class="game-name">{{ game.name }}</div>
-                </a>
+                <div class="game-card {{ game.id }}">
+                    <a href="{% url 'topup_form' game.id %}" class="game-link">
+                        <div class="game-url">
+                            <img src="{{ game.url }}" alt="{{ game.name }}" class="game-image">
+                        </div>
+                        <div class="game-name">{{ game.name }}</div>
+                    </a>
+                    {% if user.username == 'admin' %}
+                    <div class="game-actions">
+                        <a href="{% url 'edit_game' game.id %}" class="btn btn-warning btn-sm">แก้ไข</a>
+                        <form method="post" action="{% url 'delete_game' game.id %}" style="display:inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger btn-sm">ลบ</button>
+                        </form>
+                    </div>
+                    {% endif %}
+                </div>
             {% endfor %}
         </div>
+
+        {% if user.username == 'admin' %}
+        <div class="add-game-btn">
+            <a href="{% url 'add_game' %}" class="btn btn-primary">เพิ่มเกมใหม่</a>
+        </div>
+        {% endif %}
     </div>
 
     <!-- Bootstrap JS -->

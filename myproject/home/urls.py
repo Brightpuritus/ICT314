@@ -10,4 +10,7 @@ urlpatterns = [
     path('topup/<str:game_id>/process/', views.topup_process, name='topup_process'),
     path('topup/<str:game_id>/confirm/', views.topup_confirm, name='topup_confirm'),
     path('register/', views.register, name='register'),
+    path('add_game/', views.add_game, name='add_game'),
+    path('edit_game/<int:game_id>/', views.edit_game, name='edit_game'),
+    path('delete_game/<int:game_id>/', views.delete_game, name='delete_game'),
 ]

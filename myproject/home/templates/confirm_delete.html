@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div class="container">
+        <h1>ยืนยันการลบเกม</h1>
+        <p>คุณแน่ใจหรือไม่ว่าต้องการลบเกม "{{ game.name }}"?</p>
+        <form method="POST">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger">ลบ</button>
+            <a href="{% url 'topup_games' %}" class="btn btn-secondary">ยกเลิก</a>
+        </form>
+    </div>
+</body>
+</html>
