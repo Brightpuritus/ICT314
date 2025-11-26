@@ -151,10 +151,23 @@
             box-shadow: 0 4px 15px rgba(108, 117, 125, 0.3);
         }
 
-        .btn-secondary:hover {
-            background: #5a6268;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(108, 117, 125, 0.4);
+        .error-message {
+            background-color: #fee;
+            color: #c33;
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-size: 14px;
+            border-left: 4px solid #c33;
+        }
+
+        .error-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .error-list li {
+            margin-bottom: 5px;
         }
 
         @media (max-width: 600px) {
@@ -173,7 +186,6 @@
     </style>
 </head>
 <body>
-    {% include 'topbar.html' %}
     <div class="container">
         <header class="header">
             <h1>🎮 Game Top-Up</h1>
@@ -186,14 +198,29 @@
                 <p>กรุณากรอกข้อมูลเพื่อสมัครสมาชิก</p>
             </section>
             
-            <form id="registerForm" class="form">
+            {% if errors %}
+            <div class="error-message">
+                <ul class="error-list">
+                    {% for error in errors %}
+                    <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+            
+            <form method="post" class="form">
+                {% csrf_token %}
                 <div class="form-group">
                     <label for="username">ชื่อผู้ใช้</label>
-                    <input type="text" id="username" placeholder="กรอกชื่อผู้ใช้" required>
+                    <input type="text" id="username" name="username" placeholder="กรอกชื่อผู้ใช้" value="{{ username }}" required>
                 </div>
                 <div class="form-group">
                     <label for="password">รหัสผ่าน</label>
-                    <input type="password" id="password" placeholder="กรอกรหัสผ่าน" required>
+                    <input type="password" id="password" name="password" placeholder="กรอกรหัสผ่าน" required>
+                </div>
+                <div class="form-group">
+                    <label for="password_confirm">ยืนยันรหัสผ่าน</label>
+                    <input type="password" id="password_confirm" name="password_confirm" placeholder="ยืนยันรหัสผ่าน" required>
                 </div>
                 <div class="form-actions">
                     <button type="submit" class="btn btn-success">สมัครสมาชิก</button>

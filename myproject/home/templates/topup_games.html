@@ -9,10 +9,89 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <style>
+        .topbar {
+            background: rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            color: white;
+        }
+
+        .topbar-title {
+            font-size: 24px;
+            font-weight: bold;
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .topbar-right {
+            display: flex;
+            gap: 30px;
+            align-items: center;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px 20px;
+            border-radius: 25px;
+            backdrop-filter: blur(10px);
+        }
+
+        .user-info-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .user-info-item label {
+            font-size: 12px;
+            opacity: 0.8;
+            text-transform: uppercase;
+            margin-bottom: 2px;
+        }
+
+        .user-info-item value {
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .logout-btn {
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .logout-btn:hover {
+            background: #ff5252;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 107, 107, 0.4);
+            color: white;
+            text-decoration: none;
+        }
+
         body {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
-            padding: 40px 20px;
+            padding: 20px;
+        }
+        
+        .container-main {
+            max-width: 1200px;
+            margin: 0 auto;
         }
         
         .header-section {
@@ -128,29 +207,96 @@
             transform: translateY(-2px);
             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
         }
+
+        @media (max-width: 768px) {
+            .topbar {
+                flex-direction: column;
+                gap: 15px;
+                align-items: flex-start;
+            }
+
+            .topbar-right {
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            .user-info {
+                width: 100%;
+                justify-content: space-around;
+            }
+
+            .header-section h1 {
+                font-size: 2rem;
+            }
+        }
     </style>
 </head>
 <body>
-    {% include 'topbar.html' %}
-    <div class="header-section">
-        <h1>🎮 เลือกเกม</h1>
-        <p>เลือกเกมที่ต้องการเติมเงิน</p>
-    </div>
-    
-    <div class="games-grid">
-        {% for game in games %}
-            <a href="{% url 'topup_form' game.id %}" class="game-card {{ game.id }}">
-                <div class="game-icon">{{ game.icon }}</div>
-                <div class="game-name">{{ game.name }}</div>
-            </a>
-        {% endfor %}
-    </div>
-    
-    <div class="back-btn">
-        <a href="{% url 'index' %}">← กลับ</a>
+    <div class="container-main">
+        <div class="topbar">
+            <div class="topbar-title">🎮 Game Top-Up</div>
+            <div class="topbar-right">
+                <div class="user-info">
+                    <div class="user-info-item">
+                        <label>ชื่อผู้ใช้</label>
+                        <value>{{ username }}</value>
+                    </div>
+                    <div style="width: 1px; height: 30px; background: rgba(255, 255, 255, 0.3);"></div>
+                    <div class="user-info-item">
+                        <label>พอยต์</label>
+                        <value>{{ user_points }} pts</value>
+                    </div>
+                </div>
+                <a href="{% url 'logout' %}" class="logout-btn">ออกจากระบบ</a>
+            </div>
+        </div>
+
+        <div class="header-section">
+            <h1>🎮 เลือกเกม</h1>
+            <p>เลือกเกมที่ต้องการเติมเงิน</p>
+        </div>
+        
+        <div class="games-grid">
+            {% for game in games %}
+                <a href="{% url 'topup_form' game.id %}" class="game-card {{ game.id }}">
+                    <div class="game-icon">{{ game.icon }}</div>
+                    <div class="game-name">{{ game.name }}</div>
+                </a>
+            {% endfor %}
+        </div>
     </div>
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Refresh user points when page loads or becomes visible
+        function refreshUserPoints() {
+            fetch('{% url "get_user_points" %}')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Update points display
+                        const pointsElements = document.querySelectorAll('.user-info-item value');
+                        if (pointsElements.length >= 2) {
+                            pointsElements[1].textContent = data.points + ' pts';
+                        }
+                    }
+                })
+                .catch(error => console.log('Error refreshing points:', error));
+        }
+
+        // Refresh points on page load
+        document.addEventListener('DOMContentLoaded', refreshUserPoints);
+
+        // Refresh points when page becomes visible (when returning from another page)
+        document.addEventListener('visibilitychange', function() {
+            if (document.visibilityState === 'visible') {
+                refreshUserPoints();
+            }
+        });
+
+        // Also refresh every 5 seconds to keep it updated
+        setInterval(refreshUserPoints, 5000);
+    </script>
 </body>
 </html>

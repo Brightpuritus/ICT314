@@ -1,15 +1,74 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
+from django.http import JsonResponse
 from .models import Player
 import uuid
 from io import BytesIO
 import base64
 
 def index(request):
+    if request.user.is_authenticated:
+        return redirect('topup_games')
+    
+    if request.method == 'POST':
+        username = request.POST.get('username', '').strip()
+        password = request.POST.get('password', '').strip()
+        
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            login(request, user)
+            return redirect('topup_games')
+        else:
+            return render(request, 'index.html', {'error': 'ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง'})
+    
     return render(request, 'index.html')
 
 def register(request):
-    return render(request, 'register.html')    
+    if request.user.is_authenticated:
+        return redirect('topup_games')
+    
+    if request.method == 'POST':
+        username = request.POST.get('username', '').strip()
+        password = request.POST.get('password', '').strip()
+        password_confirm = request.POST.get('password_confirm', '').strip()
+        
+        errors = []
+        if not username:
+            errors.append('กรุณากรอกชื่อผู้ใช้')
+        elif len(username) < 3:
+            errors.append('ชื่อผู้ใช้ต้องมีอย่างน้อย 3 ตัวอักษร')
+        elif User.objects.filter(username=username).exists():
+            errors.append('ชื่อผู้ใช้นี้มีผู้ใช้แล้ว')
+        
+        if not password:
+            errors.append('กรุณากรอกรหัสผ่าน')
+        elif len(password) < 6:
+            errors.append('รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร')
+        
+        if password != password_confirm:
+            errors.append('รหัสผ่านไม่ตรงกัน')
+        
+        if errors:
+            return render(request, 'register.html', {'errors': errors, 'username': username})
+        
+        # Create user
+        user = User.objects.create_user(username=username, password=password)
+        # Create player profile
+        Player.objects.create(user=user, name=username)
+        
+        # Log in the user
+        login(request, user)
+        return redirect('topup_games')
+    
+    return render(request, 'register.html')
 
+def logout_view(request):
+    logout(request)
+    return redirect('index')    
+
+@login_required(login_url='index')
 def topup_games(request):
     """หน้าแรกของเติมเกม - เลือกเกม"""
     games = [
@@ -18,8 +77,36 @@ def topup_games(request):
         {'id': 'freefire', 'name': 'Free Fire', 'icon': '🔥', 'color': '#FFE66D'},
         {'id': 'genshin', 'name': 'Genshin Impact', 'icon': '✨', 'color': '#95E1D3'},
     ]
-    return render(request, 'topup_games.html', {'games': games})
+    
+    # Get user's player profile and points
+    user = request.user
+    player = None
+    user_points = 0
+    try:
+        player = getattr(user, 'player_profile', None)
+        if player:
+            user_points = player.points
+        else:
+            # Try to find by username and link
+            player = Player.objects.filter(name=user.username).first()
+            if player:
+                player.user = user
+                player.save()
+                user_points = player.points
+            else:
+                # Create a fresh Player for this user
+                player = Player.objects.create(user=user, name=user.username)
+                user_points = 0
+    except Exception:
+        pass
+    
+    return render(request, 'topup_games.html', {
+        'games': games,
+        'username': user.username,
+        'user_points': user_points
+    })
 
+@login_required(login_url='index')
 def topup_form(request, game_id):
     """หน้าฟอร์มเติมเงิน"""
     games_dict = {
@@ -69,6 +156,7 @@ def generate_qr_code(data):
         print(f"Error generating QR code: {e}")
         return None
 
+@login_required(login_url='index')
 def topup_process(request, game_id):
     """ประมวลผลการเติมเงิน"""
     if request.method == 'POST':
@@ -143,6 +231,7 @@ def topup_process(request, game_id):
     
     return render(request, 'error.html', {'message': 'Invalid request'})
 
+@login_required(login_url='index')
 def topup_confirm(request, game_id):
     """ยืนยันการชำระเงินและแสดงหน้าสำเร็จ"""
     # ดึงข้อมูลจาก URL parameters หรือ query string
@@ -161,26 +250,41 @@ def topup_confirm(request, game_id):
 
     # ปรับยอดพ้อยต์ของผู้เล่น: หักพ้อยต์ที่ใช้ (ถ้ามี) แล้วบวกพ้อยต์จากการเติมเงิน
     player_points_after = None
-    if user:
-        player, _ = Player.objects.get_or_create(name=user)
-        # หักพ้อยต์ที่ส่งมาจากหน้าก่อน (ใช้จริงสูงสุดเท่าที่มี)
+    logged_in_user = request.user
+    if logged_in_user and logged_in_user.is_authenticated:
         try:
-            used_points = int(used_points_param or 0)
-        except Exception:
-            used_points = 0
+            # Get or create player for logged-in user
+            player = getattr(logged_in_user, 'player_profile', None)
+            if player is None:
+                # Try to find by username and link
+                player = Player.objects.filter(name=logged_in_user.username).first()
+                if player:
+                    player.user = logged_in_user
+                    player.save()
+                else:
+                    # Create a fresh Player for this user
+                    player = Player.objects.create(user=logged_in_user, name=logged_in_user.username)
+            
+            # หักพ้อยต์ที่ส่งมาจากหน้าก่อน (ใช้จริงสูงสุดเท่าที่มี)
+            try:
+                used_points = int(used_points_param or 0)
+            except Exception:
+                used_points = 0
 
-        deducted = player.use_points(used_points) if used_points > 0 else 0
+            deducted = player.use_points(used_points) if used_points > 0 else 0
 
-        # ให้พ้อยต์ใหม่ตามยอดที่จ่ายจริง (สมมติ 1 THB = 1 point)
-        try:
-            paid_amount = int(amount)
-        except Exception:
-            paid_amount = 0
+            # ให้พ้อยต์ใหม่ตามยอดที่จ่ายจริง (สมมติ 1 THB = 1 point)
+            try:
+                paid_amount = int(amount)
+            except Exception:
+                paid_amount = 0
 
-        if paid_amount > 0:
-            player.add_points(paid_amount)
+            if paid_amount > 0:
+                player.add_points(paid_amount)
 
-        player_points_after = player.points
+            player_points_after = player.points
+        except Exception as e:
+            print(f"Error updating player points: {e}")
 
     return render(request, 'topup_success.html', {
         'tx_id': tx_id,
@@ -192,3 +296,33 @@ def topup_confirm(request, game_id):
         'used_points': used_points_param,
         'player_points': player_points_after,
     })
+
+@login_required(login_url='index')
+def get_user_points(request):
+    """API endpoint to get current user's points"""
+    user = request.user
+    try:
+        player = getattr(user, 'player_profile', None)
+        if player:
+            points = player.points
+        else:
+            # Try to find by username and link
+            player = Player.objects.filter(name=user.username).first()
+            if player:
+                player.user = user
+                player.save()
+                points = player.points
+            else:
+                # Create a fresh Player for this user
+                player = Player.objects.create(user=user, name=user.username)
+                points = 0
+        return JsonResponse({
+            'success': True,
+            'points': points,
+            'username': user.username
+        })
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'error': str(e)
+        }, status=400)

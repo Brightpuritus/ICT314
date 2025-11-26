@@ -113,6 +113,16 @@
             box-shadow: 0 0 10px rgba(102, 126, 234, 0.2);
         }
 
+        .error-message {
+            background-color: #fee;
+            color: #c33;
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-size: 14px;
+            border-left: 4px solid #c33;
+        }
+
         .form-actions {
             display: flex;
             gap: 12px;
@@ -172,7 +182,6 @@
     </style>
 </head>
 <body>
-    {% include 'topbar.html' %}
     <div class="container">
         <header class="header">
             <h1>🎮 Game Top-Up</h1>
@@ -185,17 +194,24 @@
                 <p>กรุณาเข้าสู่ระบบหรือสมัครสมาชิกเพื่อเติมเงินเกม</p>
             </section>
             
-            <form id="loginForm" class="form">
+            {% if error %}
+            <div class="error-message">
+                {{ error }}
+            </div>
+            {% endif %}
+            
+            <form method="post" class="form">
+                {% csrf_token %}
                 <div class="form-group">
                     <label for="username">ชื่อผู้ใช้</label>
-                    <input type="text" id="username" placeholder="กรอกชื่อผู้ใช้" required>
+                    <input type="text" id="username" name="username" placeholder="กรอกชื่อผู้ใช้" required>
                 </div>
                 <div class="form-group">
                     <label for="password">รหัสผ่าน</label>
-                    <input type="password" id="password" placeholder="กรอกรหัสผ่าน" required>
+                    <input type="password" id="password" name="password" placeholder="กรอกรหัสผ่าน" required>
                 </div>
                 <div class="form-actions">
-                    <a href="{% url 'topup_games' %}" class="btn btn-success">เข้าสู่ระบบ</a>
+                    <button type="submit" class="btn btn-success">เข้าสู่ระบบ</button>
                     <a href="{% url 'register' %}" class="btn btn-primary">สมัครสมาชิก</a>
                 </div>
             </form>
