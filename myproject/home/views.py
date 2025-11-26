@@ -197,11 +197,22 @@ def topup_process(request, game_id):
         except Exception:
             use_points_req = 0
 
-        # หา player (สร้างถ้ายังไม่มี) เพื่อดูพ้อยต์ที่มี
+        # ดึงพ้อยต์จากบัญชี login user ไม่ใช่จากชื่อที่ป้อนในฟอร์ม
+        logged_in_user = request.user
         player = None
-        if user:
-            player, _ = Player.objects.get_or_create(name=user)
-        available_points = player.points if player else 0
+        available_points = 0
+        if logged_in_user and logged_in_user.is_authenticated:
+            player = getattr(logged_in_user, 'player_profile', None)
+            if player is None:
+                # Try to find by username and link
+                player = Player.objects.filter(name=logged_in_user.username).first()
+                if player:
+                    player.user = logged_in_user
+                    player.save()
+                else:
+                    # Create a fresh Player for this user
+                    player = Player.objects.create(user=logged_in_user, name=logged_in_user.username)
+            available_points = player.points if player else 0
 
         # กำหนดจำนวนพ้อยต์ที่สามารถใช้จริง ๆ ได้ (ไม่เกินที่ผู้เล่นมี และไม่เกินจำนวนเงิน)
         try:
