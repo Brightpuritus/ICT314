@@ -1,30 +1,348 @@
+{% load static %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="th">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>แก้ไขเกม</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 50px 40px;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 40px;
+            font-weight: 700;
+            font-size: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        h1::before {
+            content: '✏️';
+            font-size: 36px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            color: #555;
+            margin-bottom: 10px;
+            display: block;
+            font-size: 15px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-control {
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 14px 18px;
+            font-size: 15px;
+            transition: all 0.3s ease;
+            background: #f9f9f9;
+        }
+
+        .form-control:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            background: white;
+            outline: none;
+        }
+
+        .form-control::placeholder {
+            color: #999;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 40px;
+        }
+
+        .btn {
+            flex: 1;
+            border-radius: 12px;
+            padding: 14px 30px;
+            font-weight: 600;
+            border: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            font-size: 15px;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-success:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+            color: white;
+        }
+
+        .btn-success:active {
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: #e0e0e0;
+            color: #333;
+        }
+
+        .btn-secondary:hover {
+            background: #d0d0d0;
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            color: #333;
+            text-decoration: none;
+        }
+
+        .btn-secondary:active {
+            transform: translateY(-1px);
+        }
+
+        .mt-3 {
+            margin-top: 1rem !important;
+        }
+
+        /* Preview Section */
+        .preview-section {
+            background: #f5f5f5;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 30px 0;
+            border: 2px dashed #e0e0e0;
+        }
+
+        .preview-title {
+            font-weight: 600;
+            color: #555;
+            margin-bottom: 15px;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .preview-game {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .preview-info {
+            flex: 1;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .game-url {
+            width: 100%;
+            height: 180px;
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .game-image {
+            width: 100%;
+            height: auto;
+            max-width: 180px; /* กำหนดขนาดสูงสุดของรูปภาพ */
+            border-radius: 10px; /* ทำให้มุมของรูปภาพโค้งมน */
+            transition: transform 0.3s ease;
+        }
+
+        .game-url:hover .game-image {
+            transform: scale(1.05);
+        }
+
+        .preview-name {
+            font-weight: 700;
+            color: #333;
+            font-size: 20px;
+            word-break: break-word;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: 30px 20px;
+            }
+
+            h1 {
+                font-size: 26px;
+            }
+
+            .game-url {
+                height: 160px;
+            }
+
+            .preview-name {
+                font-size: 18px;
+            }
+
+            .button-group {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .btn {
+                padding: 12px 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 20px 10px;
+            }
+
+            .container {
+                padding: 20px 15px;
+            }
+
+            h1 {
+                font-size: 22px;
+            }
+
+            .form-group label {
+                font-size: 14px;
+            }
+
+            .form-control {
+                padding: 12px 15px;
+            }
+
+            .game-url {
+                height: 140px;
+            }
+
+            .preview-name {
+                font-size: 16px;
+            }
+
+            .btn {
+                padding: 11px 15px;
+                font-size: 14px;
+            }
+        }
+    </style>
 </head>
 <body>
     <div class="container">
         <h1>แก้ไขเกม</h1>
+        
         <form method="POST">
             {% csrf_token %}
             <div class="form-group">
                 <label for="name">ชื่อเกม</label>
-                <input type="text" id="name" name="name" class="form-control" value="{{ game.name }}" required>
+                <input type="text" id="name" name="name" class="form-control" value="{{ game.name }}" placeholder="กรอกชื่อเกม" required>
             </div>
+
             <div class="form-group">
-                <label for="icon">ไอคอน (อีโมจิ)</label>
-                <input type="text" id="icon" name="icon" class="form-control" value="{{ game.icon }}">
+                <label for="icon">ไอคอน (อีโmoจิ)</label>
+                <input type="text" id="icon" name="icon" class="form-control" value="{{ game.icon }}" placeholder="🎮">
             </div>
+
             <div class="form-group">
                 <label for="url">URL รูปภาพ</label>
-                <input type="url" id="url" name="url" class="form-control" value="{{ game.url }}" required>
+                <input type="url" id="url" name="url" class="form-control" value="{{ game.url }}" placeholder="https://example.com/image.png" required>
             </div>
-            <button type="submit" class="btn btn-success mt-3">บันทึก</button>
-            <a href="{% url 'topup_games' %}" class="btn btn-secondary mt-3">ยกเลิก</a>
+
+            <!-- Preview Section -->
+            <div class="preview-section">
+                <div class="preview-title">📋 ตัวอย่างการแสดงผล</div>
+                <div class="preview-game">
+                    <div class="preview-info">                       
+                        <div class="game-url">
+                            <img src="{{ game.url }}" alt="{{ game.name }}" class="game-image">
+                        </div>
+                        <div class="preview-name" id="previewName">{{ game.name }}</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button type="submit" class="btn btn-success">💾 บันทึก</button>
+                <a href="{% url 'topup_games' %}" class="btn btn-secondary">← ยกเลิก</a>
+            </div>
         </form>
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Update preview in real-time
+        const nameInput = document.getElementById('name');
+        const iconInput = document.getElementById('icon');
+        const urlInput = document.getElementById('url');
+
+        const previewName = document.getElementById('previewName');
+        const previewIcon = document.getElementById('previewIcon');
+        const previewUrl = document.getElementById('previewUrl');
+
+        nameInput.addEventListener('input', () => {
+            previewName.textContent = nameInput.value || '{{ game.name }}';
+        });
+
+        iconInput.addEventListener('input', () => {
+            previewIcon.textContent = iconInput.value || '{{ game.icon }}';
+        });
+
+        urlInput.addEventListener('input', () => {
+            previewUrl.textContent = urlInput.value || '{{ game.url }}';
+        });
+    </script>
 </body>
 </html>

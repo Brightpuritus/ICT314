@@ -120,6 +120,8 @@
             border: none;
             border-radius: 20px;
             height: 200px;
+            width: 250px;
+            background: linear-gradient(135deg, #ffffff 0%, #9e93ff 100%);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -169,11 +171,6 @@
             0%, 100% { transform: translateY(0); }
             50% { transform: translateY(-8px); }
         }
-        
-        .game-card.pubg { background: linear-gradient(135deg, #FF6B6B 0%, #c92a2a 100%); border: 3px solid #FF6B6B; }
-        .game-card.rov { background: linear-gradient(135deg, #4ECDC4 0%, #1a7f78 100%); border: 3px solid #4ECDC4; }
-        .game-card.freefire { background: linear-gradient(135deg, #FFE66D 0%, #ffb700 100%); border: 3px solid #FFE66D; }
-        .game-card.genshin { background: linear-gradient(135deg, #95E1D3 0%, #2aa79b 100%); border: 3px solid #95E1D3; }
         
         .games-grid {
             display: grid;
@@ -233,7 +230,7 @@
         .game-image {
             width: 100%;
             height: auto;
-            max-width: 100px; /* กำหนดขนาดสูงสุดของรูปภาพ */
+            max-width: 150px; /* กำหนดขนาดสูงสุดของรูปภาพ */
             border-radius: 10px; /* ทำให้มุมของรูปภาพโค้งมน */
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* เพิ่มเงาให้รูปภาพ */
         }
