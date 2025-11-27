@@ -235,6 +235,7 @@ def topup_confirm(request, game_id):
 
     # ปรับยอดพ้อยต์ของผู้เล่น: หักพ้อยต์ที่ใช้ (ถ้ามี) แล้วบวกพ้อยต์จากการเติมเงิน
     player_points_after = None
+    bonus_points = 0
     logged_in_user = request.user
     if logged_in_user and logged_in_user.is_authenticated:
         try:
@@ -258,14 +259,17 @@ def topup_confirm(request, game_id):
 
             deducted = player.use_points(used_points) if used_points > 0 else 0
 
-            # ให้พ้อยต์ใหม่ตามยอดที่จ่ายจริง (สมมติ 1 THB = 1 point)
+            # คำนวณพอยต์ใหม่: 100 บาท = 1 พอยต์
             try:
                 paid_amount = int(amount)
             except Exception:
                 paid_amount = 0
 
             if paid_amount > 0:
-                player.add_points(paid_amount)
+                # ให้พอยต์ใหม่ตามยอดที่จ่ายจริง (100 บาท = 1 พอยต์)
+                bonus_points = paid_amount // 100
+                if bonus_points > 0:
+                    player.add_points(bonus_points)
 
             player_points_after = player.points
         except Exception as e:
@@ -279,6 +283,7 @@ def topup_confirm(request, game_id):
         'game_id': game_id,
         'qr_code': qr_code_base64,
         'used_points': used_points_param,
+        'bonus_points': bonus_points,
         'player_points': player_points_after,
     })
 
