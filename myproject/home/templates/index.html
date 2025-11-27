@@ -5,217 +5,95 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>เข้าสู่ระบบ - Game Top-Up</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .container {
-            max-width: 500px;
-            width: 100%;
-            background: #ffffff;
-            border-radius: 15px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-            overflow: hidden;
-            animation: slideUp 0.5s ease-out;
-        }
-
-        @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: #ffffff;
-            text-align: center;
-            padding: 30px 20px;
-        }
-
-        .header h1 {
-            font-size: 28px;
-            margin-bottom: 8px;
-            font-weight: bold;
-        }
-
-        .header p {
-            font-size: 13px;
-            opacity: 0.9;
-        }
-
-        .content {
-            padding: 30px;
-        }
-
-        .welcome-text {
-            text-align: center;
-            margin-bottom: 25px;
-        }
-
-        .welcome-text h2 {
-            font-size: 22px;
-            color: #333;
-            margin-bottom: 10px;
-        }
-
-        .welcome-text p {
-            font-size: 14px;
-            color: #666;
-            line-height: 1.5;
-        }
-
-        .form {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .form-group {
-            margin-bottom: 18px;
-        }
-
-        .form-group label {
-            display: block;
-            font-weight: 600;
-            margin-bottom: 8px;
-            color: #333;
-            font-size: 14px;
-        }
-
-        .form-group input {
-            width: 100%;
-            padding: 12px 15px;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            font-size: 14px;
-            transition: all 0.3s ease;
-        }
-
-        .form-group input:focus {
-            outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 10px rgba(102, 126, 234, 0.2);
-        }
-
-        .error-message {
-            background-color: #fee;
-            color: #c33;
-            padding: 12px 15px;
-            border-radius: 8px;
-            margin-bottom: 15px;
-            font-size: 14px;
-            border-left: 4px solid #c33;
-        }
-
-        .form-actions {
-            display: flex;
-            gap: 12px;
-            margin-top: 25px;
-        }
-
-        .btn {
-            flex: 1;
-            padding: 12px;
-            font-size: 14px;
-            font-weight: 600;
-            color: #ffffff;
-            text-decoration: none;
-            border-radius: 8px;
-            border: none;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-align: center;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .btn-success {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
-        }
-
-        .btn-success:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            box-shadow: 0 4px 15px rgba(245, 87, 108, 0.4);
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(245, 87, 108, 0.6);
-        }
-
-        @media (max-width: 600px) {
-            .container {
-                margin: 10px;
-            }
-            
-            .content {
-                padding: 20px;
-            }
-            
-            .form-actions {
-                flex-direction: column;
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="{% static 'css/Login.css' %}">
 </head>
 <body>
-    <div class="container">
-        <header class="header">
-            <h1>🎮 Game Top-Up</h1>
-            <p>เติมเงินเกมง่ายๆ ปลอดภัย รวดเร็ว</p>
-        </header>
+    <div class="main-container">
+        <!-- Left Section - Information -->
+        <div class="info-section">
+            <div class="logo">🎮</div>
+            <h1>Game Top-Up</h1>
+            <p class="tagline">เติมเงินเกมง่าย ปลอดภัย รวดเร็ว</p>
 
-        <main class="content">
-            <section class="welcome-text">
-                <h2>ยินดีต้อนรับ</h2>
-                <p>กรุณาเข้าสู่ระบบหรือสมัครสมาชิกเพื่อเติมเงินเกม</p>
-            </section>
-            
-            {% if error %}
-            <div class="error-message">
-                {{ error }}
+            <div class="features-list">
+                <div class="feature-card">
+                    <div class="feature-header">
+                        <div class="feature-icon">💳</div>
+                        <div class="feature-title">ช่องทางชำระสะดวก</div>
+                    </div>
+                    <p class="feature-desc">รองรับหลายช่องทาง QR Code และวิธีชำระที่ปลอดภัย</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-header">
+                        <div class="feature-icon">🎁</div>
+                        <div class="feature-title">พอยต์ซ้อน</div>
+                    </div>
+                    <p class="feature-desc">ทุกครั้งที่เติมเงิน คุณได้พอยต์สะสมเพื่อส่วนลด</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-header">
+                        <div class="feature-icon">🔒</div>
+                        <div class="feature-title">ปลอดภัย 100%</div>
+                    </div>
+                    <p class="feature-desc">ข้อมูลคุณถูกเข้ารหัสและคุ้มครองอย่างมั่นคง</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-header">
+                        <div class="feature-icon">🎮</div>
+                        <div class="feature-title">เกมหลากหลาย</div>
+                    </div>
+                    <p class="feature-desc">เลือกเติมเงินเกมยอดนิยมต่างๆ ในที่เดียว</p>
+                </div>
             </div>
-            {% endif %}
-            
-            <form method="post" class="form">
-                {% csrf_token %}
-                <div class="form-group">
-                    <label for="username">ชื่อผู้ใช้</label>
-                    <input type="text" id="username" name="username" placeholder="กรอกชื่อผู้ใช้" required>
+        </div>
+
+        <!-- Right Section - Login Form -->
+        <div class="login-container">
+            <div class="login-header">
+                <h2>🎮 Game Top-Up</h2>
+                <p>ยินดีต้อนรับกลับมา</p>
+            </div>
+
+            <div class="login-content">
+                <div class="welcome-section">
+                    <h3>เข้าสู่ระบบ</h3>
+                    <p>กรุณากรอกข้อมูลของคุณเพื่อเข้าสู่ระบบ</p>
                 </div>
-                <div class="form-group">
-                    <label for="password">รหัสผ่าน</label>
-                    <input type="password" id="password" name="password" placeholder="กรอกรหัสผ่าน" required>
+
+                {% if error %}
+                <div class="error-alert">
+                    ⚠️ {{ error }}
                 </div>
-                <div class="form-actions">
-                    <button type="submit" class="btn btn-success">เข้าสู่ระบบ</button>
-                    <a href="{% url 'register' %}" class="btn btn-primary">สมัครสมาชิก</a>
-                </div>
-            </form>
-        </main>
+                {% endif %}
+
+                <form method="post" class="login-form">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="username">👤 ชื่อผู้ใช้</label>
+                        <input type="text" id="username" name="username" placeholder="กรอกชื่อผู้ใช้ของคุณ" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password">🔐 รหัสผ่าน</label>
+                        <input type="password" id="password" name="password" placeholder="กรอกรหัสผ่านของคุณ" required>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-login">
+                            ➜ เข้าสู่ระบบ
+                        </button>
+                    </div>
+                </form>
+
+                <div class="divider">หรือ</div>
+
+                <p style="text-align: center; color: #666; font-size: 0.9rem; margin-top: 20px;">
+                    ยังไม่เป็นสมาชิก? <a href="{% url 'register' %}" style="color: #667eea; font-weight: 700; text-decoration: none;">สร้างบัญชีใหม่</a>
+                </p>
+            </div>
+        </div>
     </div>
 </body>
 </html>

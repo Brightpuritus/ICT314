@@ -4,312 +4,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>เลือกเกม - เติมเงิน</title>
-    <!-- Bootstrap CSS -->
+    <title>เลือกเกม - Game Top-Up</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
-    <style>
-        .topbar {
-            background: rgba(0, 0, 0, 0.2);
-            backdrop-filter: blur(10px);
-            padding: 15px 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            color: white;
-        }
-
-        .topbar-title {
-            font-size: 24px;
-            font-weight: bold;
-            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-        }
-
-        .topbar-right {
-            display: flex;
-            gap: 30px;
-            align-items: center;
-        }
-
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            background: rgba(255, 255, 255, 0.1);
-            padding: 10px 20px;
-            border-radius: 25px;
-            backdrop-filter: blur(10px);
-        }
-
-        .user-info-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .user-info-item label {
-            font-size: 12px;
-            opacity: 0.8;
-            text-transform: uppercase;
-            margin-bottom: 2px;
-        }
-
-        .user-info-item value {
-            font-size: 16px;
-            font-weight: bold;
-        }
-
-        .logout-btn {
-            background: #ff6b6b;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 20px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            display: inline-block;
-        }
-
-        .logout-btn:hover {
-            background: #ff5252;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(255, 107, 107, 0.4);
-            color: white;
-            text-decoration: none;
-        }
-
-        body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
-        }
-        
-        .container-main {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-        
-        .header-section {
-            text-align: center;
-            margin-bottom: 50px;
-            color: white;
-        }
-        
-        .header-section h1 {
-            font-size: 3rem;
-            font-weight: 700;
-            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-            margin-bottom: 10px;
-        }
-        
-        .header-section p {
-            font-size: 1.2rem;
-            opacity: 0.95;
-            text-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
-        }
-        
-        .game-card {
-            position: relative;
-            cursor: pointer;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            border: none;
-            border-radius: 20px;
-            height: 200px;
-            width: 250px;
-            background: linear-gradient(135deg, #ffffff 0%, #9e93ff 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-            text-decoration: none;
-            color: white;
-            font-weight: bold;
-            font-size: 20px;
-            overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-        }
-        
-        .game-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.1);
-            transition: all 0.4s ease;
-        }
-        
-        .game-card:hover {
-            transform: translateY(-12px) scale(1.02);
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
-        }
-        
-        .game-card:hover::before {
-            background: rgba(0, 0, 0, 0.2);
-        }
-        
-        .game-icon {
-            font-size: 56px;
-            margin-bottom: 12px;
-            position: relative;
-            z-index: 1;
-            animation: bounce 2s infinite;
-        }
-        
-        .game-name {
-            position: relative;
-            z-index: 1;
-        }
-        
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-8px); }
-        }
-        
-        .games-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 25px;
-            margin-bottom: 40px;
-            max-width: 1000px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-        
-        .back-btn {
-            text-align: center;
-            margin-top: 30px;
-        }
-        
-        .back-btn a {
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
-            border: 2px solid white;
-            padding: 12px 30px;
-            border-radius: 50px;
-            text-decoration: none;
-            transition: all 0.3s ease;
-            display: inline-block;
-            font-weight: 600;
-        }
-        
-        .back-btn a:hover {
-            background: rgba(255, 255, 255, 0.3);
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
-        }
-
-        @media (max-width: 768px) {
-            .topbar {
-                flex-direction: column;
-                gap: 15px;
-                align-items: flex-start;
-            }
-
-            .topbar-right {
-                width: 100%;
-                justify-content: space-between;
-            }
-
-            .user-info {
-                width: 100%;
-                justify-content: space-around;
-            }
-
-            .header-section h1 {
-                font-size: 2rem;
-            }
-        }
-
-        .game-image {
-            width: 100%;
-            height: auto;
-            max-width: 150px; /* กำหนดขนาดสูงสุดของรูปภาพ */
-            border-radius: 10px; /* ทำให้มุมของรูปภาพโค้งมน */
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* เพิ่มเงาให้รูปภาพ */
-        }
-
-        .add-game-btn {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
-        .add-game-btn .btn {
-            background: #4CAF50;
-            color: white;
-            padding: 10px 20px;
-            border-radius: 8px;
-            text-decoration: none;
-            font-weight: bold;
-            transition: all 0.3s ease;
-        }
-
-        .add-game-btn .btn:hover {
-            background: #45a049;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-        }
-
-        .game-actions {
-            position: relative;
-            z-index: 10; /* ทำให้ปุ่มอยู่ด้านบนสุด */
-            pointer-events: auto; /* ตรวจสอบให้แน่ใจว่าสามารถคลิกได้ */
-        }  
-
-        .game-link {
-            text-decoration: none;
-            color: inherit;
-            display: block;
-            transition: all 0.3s ease;
-            text-align: center;
-        }
-
-        .game-link:hover {
-            transform: scale(1.05);
-        }
-
-        .game-actions {
-            margin-top: 10px;
-            display: flex;
-            gap: 10px;
-            justify-content: center;
-        }
-    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/topup_games.css' %}">
 </head>
 <body>
-    <div class="container-main">
-        <div class="topbar">
-            <div class="topbar-title">🎮 Game Top-Up</div>
-            <div class="topbar-right">
-                <div class="user-info">
-                    <div class="user-info-item">
-                        <label>ชื่อผู้ใช้</label>
-                        <value>{{ username }}</value>
-                    </div>
-                    <div style="width: 1px; height: 30px; background: rgba(255, 255, 255, 0.3);"></div>
-                    <div class="user-info-item">
-                        <label>พอยต์</label>
-                        <value>{{ user_points }} pts</value>
-                    </div>
+    <div class="topbar">
+        <div class="topbar-title">
+            <i class="fas fa-gamepad"></i> Game Top-Up
+        </div>
+        <div class="topbar-right">
+            <div class="user-info">
+                <div class="user-info-item">
+                    <label>👤 ชื่อผู้ใช้</label>
+                    <value>{{ username }}</value>
                 </div>
-                <a href="{% url 'logout' %}" class="logout-btn">ออกจากระบบ</a>
+                <div style="width: 2px; height: 30px; background: rgba(102, 126, 234, 0.2);"></div>
+                <div class="user-info-item">
+                    <label>⭐ พอยต์</label>
+                    <value>{{ user_points }} pts</value>
+                </div>
             </div>
+            <a href="{% url 'logout' %}" class="logout-btn">
+                <i class="fas fa-sign-out-alt"></i> ออกจากระบบ
+            </a>
+        </div>
+    </div>
+
+    <div class="container-main">
+        <div class="header-section">
+            <h1>🎮 เลือกเกมของคุณ</h1>
+            <p>เลือกเกมที่ต้องการเติมเงินและเริ่มเล่นได้เลย</p>
         </div>
 
-        <div class="header-section">
-            <h1>🎮 เลือกเกม</h1>
-            <p>เลือกเกมที่ต้องการเติมเงิน</p>
-        </div>
-        
+        {% if games %}
         <div class="games-grid">
             {% for game in games %}
-                <div class="game-card {{ game.id }}">
+                <div class="game-card">
                     <a href="{% url 'topup_form' game.id %}" class="game-link">
                         <div class="game-url">
                             <img src="{{ game.url }}" alt="{{ game.name }}" class="game-image">
@@ -318,11 +50,12 @@
                     </a>
                     {% if user.username == 'admin' %}
                     <div class="game-actions">
-                        <a href="{% url 'edit_game' game.id %}" class="btn btn-warning btn-sm">แก้ไข</a>
-                        <form method="post" action="{% url 'delete_game' game.id %}" style="display:inline;">
-                            {% csrf_token %}
-                            <button type="submit" class="btn btn-danger btn-sm">ลบ</button>
-                        </form>
+                        <a href="{% url 'edit_game' game.id %}" class="btn btn-warning btn-sm">
+                            <i class="fas fa-edit"></i> แก้ไข
+                        </a>
+                        <a href="{% url 'delete_game' game.id %}" class="btn btn-danger btn-sm" onclick="return confirm('คุณแน่ใจหรือไม่ที่จะลบเกมนี้?')">
+                            <i class="fas fa-trash"></i> ลบ
+                        </a>
                     </div>
                     {% endif %}
                 </div>
@@ -330,22 +63,29 @@
         </div>
 
         {% if user.username == 'admin' %}
-        <div class="add-game-btn">
-            <a href="{% url 'add_game' %}" class="btn btn-primary">เพิ่มเกมใหม่</a>
+        <div class="add-game-section">
+            <a href="{% url 'add_game' %}" class="btn-primary">
+                <i class="fas fa-plus-circle"></i> เพิ่มเกมใหม่
+            </a>
+        </div>
+        {% endif %}
+        {% else %}
+        <div class="empty-state">
+            <i class="fas fa-inbox"></i>
+            <h3>ไม่มีเกมที่ใช้ได้</h3>
+            <p>กรุณาติดต่อผู้ดูแลระบบเพื่อเพิ่มเกมใหม่</p>
         </div>
         {% endif %}
     </div>
 
-    <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Refresh user points when page loads or becomes visible
+        // Refresh user points
         function refreshUserPoints() {
             fetch('{% url "get_user_points" %}')
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        // Update points display
                         const pointsElements = document.querySelectorAll('.user-info-item value');
                         if (pointsElements.length >= 2) {
                             pointsElements[1].textContent = data.points + ' pts';
@@ -355,17 +95,12 @@
                 .catch(error => console.log('Error refreshing points:', error));
         }
 
-        // Refresh points on page load
         document.addEventListener('DOMContentLoaded', refreshUserPoints);
-
-        // Refresh points when page becomes visible (when returning from another page)
         document.addEventListener('visibilitychange', function() {
             if (document.visibilityState === 'visible') {
                 refreshUserPoints();
             }
         });
-
-        // Also refresh every 5 seconds to keep it updated
         setInterval(refreshUserPoints, 5000);
     </script>
 </body>
