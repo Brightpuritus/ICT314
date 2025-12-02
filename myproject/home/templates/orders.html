@@ -1,0 +1,219 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>ใบ Orders - Admin</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+        .orders-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        .filters-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        .filters-section select,
+        .filters-section input {
+            padding: 10px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        .filters-section button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 10px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        .filters-section button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+        .back-btn {
+            display: inline-block;
+            margin-bottom: 20px;
+            background: #e0e0e0;
+            color: #333;
+            padding: 10px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        .back-btn:hover {
+            background: #d0d0d0;
+            text-decoration: none;
+            color: #333;
+        }
+        table {
+            width: 100%;
+            margin-top: 20px;
+        }
+        table thead {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        table th {
+            padding: 15px;
+            font-weight: 700;
+            text-align: center;
+        }
+        table td {
+            padding: 15px;
+            text-align: center;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        table tr:hover {
+            background: #f8f9fa;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 13px;
+        }
+        .status-completed {
+            background: #d4edda;
+            color: #155724;
+        }
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+        .status-cancelled {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 20px;
+        }
+        .tx-id {
+            font-family: 'Courier New', monospace;
+            background: #f0f2ff;
+            padding: 5px 10px;
+            border-radius: 5px;
+            color: #667eea;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="orders-container">
+        <a href="{% url 'topup_games' %}" class="back-btn">← กลับไปหน้าหลัก</a>
+        
+        <div class="header">
+            <h1>📋 ใบ Orders</h1>
+            <p style="color: #666;">รายการการเติมเงินทั้งหมด</p>
+        </div>
+        
+        <form method="GET" class="filters-section">
+            <input type="text" name="search" placeholder="🔍 ค้นหา TX ID หรือชื่อผู้เล่น" value="{{ search_query }}">
+            
+            <select name="game">
+                <option value="">ทุกเกม</option>
+                {% for game in games %}
+                    <option value="{{ game.id }}" {% if current_game|stringformat:"s" == game.id|stringformat:"s" %}selected{% endif %}>{{ game.name }}</option>
+                {% endfor %}
+            </select>
+            
+            <select name="status">
+                <option value="">ทุกสถานะ</option>
+                <option value="completed" {% if current_status == "completed" %}selected{% endif %}>✓ เสร็จสิ้น</option>
+                <option value="pending" {% if current_status == "pending" %}selected{% endif %}>⏳ รอการยืนยัน</option>
+                <option value="cancelled" {% if current_status == "cancelled" %}selected{% endif %}>✕ ยกเลิก</option>
+            </select>
+            
+            <button type="submit">🔍 ค้นหา</button>
+            <a href="{% url 'view_orders' %}" style="background: #6c757d; color: white; padding: 10px 30px; border-radius: 8px; text-decoration: none; font-weight: 600;">รีเซ็ต</a>
+        </form>
+        
+        {% if orders %}
+        <div style="overflow-x: auto;">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>TX ID</th>
+                        <th>เกม</th>
+                        <th>ผู้เล่น</th>
+                        <th>จำนวน (บาท)</th>
+                        <th>ใช้พ้อยต์</th>
+                        <th>จ่ายจริง (บาท)</th>
+                        <th>พ้อยต์ที่ได้</th>
+                        <th>สถานะ</th>
+                        <th>วันที่</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for order in orders %}
+                    <tr>
+                        <td><span class="tx-id">{{ order.transaction_id }}</span></td>
+                        <td>🎮 {{ order.game.name }}</td>
+                        <td>{{ order.player_name }}</td>
+                        <td><strong>฿{{ order.original_amount }}</strong></td>
+                        <td>{{ order.used_points }} pts</td>
+                        <td><strong>฿{{ order.paid_amount }}</strong></td>
+                        <td><strong style="color: #28a745;">+{{ order.bonus_points }} pts</strong></td>
+                        <td>
+                            <span class="status-badge status-{{ order.status }}">
+                                {% if order.status == "completed" %}✓ เสร็จสิ้น
+                                {% elif order.status == "pending" %}⏳ รอการยืนยัน
+                                {% else %}✕ ยกเลิก
+                                {% endif %}
+                            </span>
+                        </td>
+                        <td>{{ order.created_at|date:"d/m/Y H:i" }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <i class="fas fa-inbox"></i>
+            <h3>ไม่พบใบ Orders</h3>
+            <p>ยังไม่มีรายการเติมเงินในระบบ</p>
+        </div>
+        {% endif %}
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

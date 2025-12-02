@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.http import JsonResponse
 from django.contrib import messages
-from .models import Player, Game
+from .models import Player, Game, Order  # 🆕 เพิ่ม Order
 import uuid
 from io import BytesIO
 import base64
@@ -272,6 +272,26 @@ def topup_confirm(request, game_id):
                     player.add_points(bonus_points)
 
             player_points_after = player.points
+            
+            # 🆕 บันทึก Order
+            try:
+                game = Game.objects.get(name=game_name)
+                original_amount = paid_amount + used_points
+                
+                Order.objects.create(
+                    user=logged_in_user,
+                    game=game,
+                    player_name=user,
+                    original_amount=original_amount,
+                    used_points=used_points,
+                    paid_amount=paid_amount,
+                    bonus_points=bonus_points,
+                    transaction_id=tx_id,
+                    status='completed'
+                )
+            except Exception as e:
+                print(f"Error creating order: {e}")
+                
         except Exception as e:
             print(f"Error updating player points: {e}")
 
@@ -360,3 +380,33 @@ def delete_game(request, game_id):
         return redirect('topup_games')
 
     return render(request, 'confirm_delete.html', {'game': game})
+
+@login_required(login_url='index')
+def view_orders(request):
+    """แสดงใบ Orders (สำหรับ admin เท่านั้น)"""
+    if request.user.username != 'admin':
+        return render(request, 'error.html', {'message': 'คุณไม่มีสิทธิ์ในการเข้าถึงหน้านี้'})
+    
+    orders = Order.objects.all()
+    
+    # Filtering
+    status_filter = request.GET.get('status')
+    game_filter = request.GET.get('game')
+    search = request.GET.get('search', '').strip()
+    
+    if status_filter:
+        orders = orders.filter(status=status_filter)
+    if game_filter:
+        orders = orders.filter(game_id=game_filter)
+    if search:
+        orders = orders.filter(transaction_id__icontains=search) | orders.filter(player_name__icontains=search)
+    
+    games = Game.objects.all()
+    
+    return render(request, 'orders.html', {
+        'orders': orders,
+        'games': games,
+        'current_status': status_filter,
+        'current_game': game_filter,
+        'search_query': search,
+    })
